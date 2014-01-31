@@ -11,11 +11,16 @@ curl -XPUT -H 'content-type: application/json' 'http://localhost:8098/buckets/me
 more details:
 https://groups.google.com/forum/#!msg/nosql-databases/J7m3FSYM_RU/Hb1sWkMjj20J
 
+put value:
+curl -v -XPUT http://localhost:8098/buckets/members/keys/e421?returnbody=true \
+  -H "Content-Type: application/json" \
+  -d '{"first_name":"Andrei", "last_name":"Silchankau"}'
+
 get all keys of the bucket:
-curl -i 'http://localhost:8098/buckets/echo/keys?keys=true'
+curl -i 'http://localhost:8098/buckets/members/keys?keys=true'
 
 get value by key:
-curl -i 'http://localhost:8098/riak/echo/mine'
+curl -i 'http://localhost:8098/buckets/members/keys/e421'
 
 
 
