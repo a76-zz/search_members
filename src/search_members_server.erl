@@ -1,6 +1,6 @@
 -module(search_members_server).
 
--behaviour(gen_sever).
+-behaviour(gen_server).
 
 -export([start_link/0]).
 
@@ -33,14 +33,8 @@ terminate(_Reason, #state{amqp_server = AmqpServer, riak_client = RiakClient}) -
 
 handle_call({search, Request}, _From, State) ->
     Pid = State#state.riak_client,
-    Get = riakc_pb_socket:get(Pid, <<"echo">>, <<"mine">>),
-    case Get of 
-        {ok, Object} ->
-            Update = riakc_obj:update_value(Object, Request);
-        {error, notfound} ->
-            Update = riakc_obj:new(<<"echo">>, <<"mine">>, Request)
-    end,
-    riakc_pb_socket:put(Pid, Update),
+    update(Pid, Request),
+    search(Pid, Request),
     {reply, Request, State}.
 
 handle_cast(_Msg, State) ->
@@ -51,6 +45,21 @@ handle_info(_Info, State) ->
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+
+update(Pid, Value) ->
+    Get = riakc_pb_socket:get(Pid, <<"echo">>, <<"mine">>),
+    case Get of 
+        {ok, Object} ->
+            Update = riakc_obj:update_value(Object, Value);
+        {error, notfound} ->
+            Update = riakc_obj:new(<<"echo">>, <<"mine">>, Value)
+    end,
+    riakc_pb_socket:put(Pid, Update).
+
+search(Pid, Request) ->
+    Response = riakc_pb_socket:search(Pid, <<"members">>, <<"first_name_s:Andrei">>),
+    io:format("Search Result:~p~n", [Response]).
 
 
 
