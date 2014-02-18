@@ -1,6 +1,6 @@
 -module(search_members_db).
 
--behaviour(get_server).
+-behaviour(gen_server).
 
 -export([start_link/0, members_search/1]).
 
@@ -28,7 +28,7 @@ handle_call({search, Request}, _From, State) ->
     search(State#state.riak_client, Request),
     {reply, Request, State}.
 
-search(Pid, Request) ->
+search(Pid, _Request) ->
     Response = riakc_pb_socket:search(Pid, <<"members">>, <<"first_name_s:Andrei">>),
     io:format("Search Result:~p~n", [Response]).
 
