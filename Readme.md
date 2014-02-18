@@ -57,6 +57,17 @@ For example default schema defines postfix _s for string value.
 If it is ommited in the document content and fields are defined without they will be not returned in the result search.
 The same rule for tagging.
 
+update sample:
+update(Pid, Value) ->
+    Get = riakc_pb_socket:get(Pid, <<"echo">>, <<"mine">>),
+    case Get of 
+        {ok, Object} ->
+            Update = riakc_obj:update_value(Object, Value);
+        {error, notfound} ->
+            Update = riakc_obj:new(<<"echo">>, <<"mine">>, Value)
+    end,
+    riakc_pb_socket:put(Pid, Update).
+
 
 
 

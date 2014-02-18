@@ -23,7 +23,8 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Children = [?CHILD(search_members_server, worker)],
+    Children = [?CHILD(search_members_db, worker),
+                ?CHILD(search_members_handler, worker)],
 	RestartStrategy = {one_for_one, 0, 1},
 	{ok, {RestartStrategy, Children}}.
 
