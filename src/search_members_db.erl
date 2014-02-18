@@ -25,12 +25,12 @@ terminate(_Reason, State) ->
 	riakc_pb_socket:stop(State#state.riak_client).
 
 handle_call({search, Request}, _From, State) ->
-    search(State#state.riak_client, Request),
-    {reply, Request, State}.
+    Response = search(State#state.riak_client, Request),
+    error_logger:info_msg("search response: ~p~n", [Response]),
+    {reply, Response, State}.
 
-search(Pid, _Request) ->
-    Response = riakc_pb_socket:search(Pid, <<"members">>, <<"first_name_s:Andrei">>),
-    io:format("Search Result:~p~n", [Response]).
+search(Pid, Request) ->
+    riakc_pb_socket:search(Pid, <<"members">>, Request).
 
 handle_cast(_Msg, State) ->
     {noreply, State}.

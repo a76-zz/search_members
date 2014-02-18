@@ -15,11 +15,12 @@ start_link() ->
 	gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 init([]) ->
-	{ok, Connection, Server} = amqp:start_rpc_server("localhost", <<"members_search_rpc">>, fun members_search/1),
+	{ok, Connection, Server} = amqp:start_rpc_server("localhost", <<"members_search">>, fun members_search/1),
 	{ok, #state{connection = Connection, server = Server}}.
 
 members_search(Request) ->
-	search_members_db:members_search(Request).
+	Response = search_members_db:members_search(Request),
+	erlang:term_to_binary(Response). 
 
 terminate(_Reason, State) ->
 	amqp:stop_rpc_server(State#state.connection, State#state.server).
